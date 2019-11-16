@@ -1,11 +1,12 @@
 #!/bin/bash
 VAGRANT_HOST_DIR=$1
 BUILD_CLIENT_API=$2
-SQL_PASSWORD=$3
+ROOT_USERNAME=$3
+ROOT_PASSWORD=$4
 
 echo_parameters()
 {
-    echo "Parameters received from Vagrantfile: $VAGRANT_HOST_DIR $BUILD_CLIENT_API $SQL_PASSWORD"  
+    echo "Parameters received from Vagrantfile: $VAGRANT_HOST_DIR $BUILD_CLIENT_API $ROOT_USERNAME $ROOT_PASSWORD"  
 }
 
 img_pull_mongodb()
@@ -13,24 +14,26 @@ img_pull_mongodb()
     docker rm -f docker-mongodb
     echo "Pulling MongoDb from remote Docker registry."
     # Pulling the image from remote docker registry may take a while. Wait for this command to finish.
-    docker pull mcr.microsoft.com/mssql/server:2017-latest &
+    docker pull mongo &
     wait $!
-    echo "Successfully pulled SQL Server 2017 Docker image."
+    echo "Successfully pulled MongoDb Docker image."
 }
 
-img_build_sqlserver_nonroot()
-{
-    echo "Building Non-root SQL Server 2017."
-    docker build $VAGRANT_HOST_DIR/docker/sql-nonroot -t sqlserver-2017-nonroot &
-    wait $!
-}
+### TODO ###
+# img_build_mongodb_nonroot()
+# {
+#     echo "Building Non-root MongoDb."
+#     docker build $VAGRANT_HOST_DIR/docker/sql-nonroot -t sqlserver-2017-nonroot &
+#     wait $!
+# }
+### TODO ###
 
-container_run_sqlserver()
+container_run_mongodb()
 {
-    echo "Running Non-root SQL Server 2017 container."
-    docker run -d --restart unless-stopped -p 1433:1433 -v sqlvolume:/var/opt/mssql -e SA_PASSWORD=D0cker123 -e ACCEPT_EULA=Y --name docker-mssql sqlserver-2017-nonroot &
+    echo "Running MongoDb container."
+    docker run -d --restart unless-stopped -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=$ROOT_USERNAME -e MONGO_INITDB_ROOT_PASSWORD=$ROOT_PASSWORD --name docker-mongo mongo:latest &
     wait $!
-    sudo usermod -aG docker mssql
+    sudo usermod -aG docker mongo
 }
 
 db_setup()
@@ -115,9 +118,9 @@ echo "Installing Docker Engine."
 install_docker_engine
 echo "Docker Engine successfully installed."
 
-# img_pull_sqlserver
-# img_build_sqlserver_nonroot
-# container_run_sqlserver
+img_pull_mongodb
+# img_build_mongodb_nonroot
+container_run_mongodb
 # db_setup
 
 # echo "Resetting the database."

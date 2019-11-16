@@ -6,11 +6,11 @@ Vagrant.configure("2") do |config|
 
     ################################################################################################
     # Port fowarding rules
-    # Change port 1433 to a different port if you already have SQL Server running on your host machine as
-    # this is lkely to cause conflicts.
+    # Change port 27017 to a different port if you already have MongoDb running on your host machine 
+    # as this is lkely to cause conflicts.
     ################################################################################################
-    # SQL Server
-    netcoremongo_host.vm.network "forwarded_port", guest: 1433, host: 1444
+    # MongoDb Server
+    netcoremongo_host.vm.network "forwarded_port", guest: 27017, host: 27018
     # Client API
     netcoremongo_host.vm.network "forwarded_port", guest: 8080, host: 8080
    
@@ -31,8 +31,8 @@ Vagrant.configure("2") do |config|
     # Add run: "always" argument to force the provisioner to be ran everytime vagrant up is called.
     netcoremongo_host.vm.provision "shell" do |s|
       s.path = "provision.sh"
-      # Parameters (VAGRANT_HOST_DIR, BUILD_CLIENT_API, SQL_PASSWORD)
-      s.args = "/mnt/host false D0cker123"
+      # Parameters (VAGRANT_HOST_DIR, BUILD_CLIENT_API, ROOT_USERNAME, ROOT_PASSWORD)
+      s.args = "/mnt/host false root D0cker123"
     end
 
   end
