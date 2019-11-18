@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
     # as this is lkely to cause conflicts.
     ################################################################################################
     # MongoDb Server
-    netcoremongo_host.vm.network "forwarded_port", guest: 27017, host: 27018
+    netcoremongo_host.vm.network "forwarded_port", guest: 27017, host: 27020
     # Client API
     netcoremongo_host.vm.network "forwarded_port", guest: 8080, host: 8080
    
