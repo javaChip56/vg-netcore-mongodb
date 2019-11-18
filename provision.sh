@@ -11,7 +11,7 @@ echo_parameters()
 
 img_pull_mongodb()
 {
-    docker rm -f docker-mongodb
+    docker rm -f docker-mongo
     echo "Pulling MongoDb from remote Docker registry."
     # Pulling the image from remote docker registry may take a while. Wait for this command to finish.
     docker pull mongo &
@@ -31,7 +31,7 @@ img_pull_mongodb()
 container_run_mongodb()
 {
     echo "Running MongoDb container."
-    docker run -d --restart unless-stopped -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=$ROOT_USERNAME -e MONGO_INITDB_ROOT_PASSWORD=$ROOT_PASSWORD --name docker-mongo mongo:latest &
+    docker run -d --restart unless-stopped -p 27017:27017 -v mongodata:/data/db -e MONGO_INITDB_ROOT_USERNAME=$ROOT_USERNAME -e MONGO_INITDB_ROOT_PASSWORD=$ROOT_PASSWORD --name docker-mongo mongo:latest &
     wait $!
     sudo usermod -aG docker mongo
 }
@@ -39,17 +39,19 @@ container_run_mongodb()
 db_setup()
 {
     echo "Setting up Client database."
-    # Copy the DB initialization scripts from host to the container scripts directory.
-    docker cp /mnt/host/db_scripts/db_init.sql docker-mssql:/var/opt/mssql-scripts/db_init.sql
-    # Run the DB initilization script.
-    docker exec docker-mssql /bin/sh -c '/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P '"$SQL_PASSWORD"' -i /var/opt/mssql-scripts/db_init.sql' &
+    docker exec docker-mongo /bin/sh -c 'mkdir /var/opt/imported-collections/' &
     wait $!
-    echo "SQL Server is ready."
+    # Copy the DB initialization scripts from host to the container scripts directory.
+    docker cp /mnt/host/mongo_scripts/client_collection.json docker-mongo:/var/opt/imported-collections/client_collection.json
+    # Run the DB initilization script.
+    docker exec docker-mongo /bin/sh -c 'mongoimport --db ClientDB --collection client --authenticationDatabase admin --username root --password D0cker123 --drop --file /var/opt/imported-collections/client_collection.json' &
+    wait $!
+    echo "MongoDB is ready."
 }
 
 reset_database_data()
 {
-    rm -rf $VAGRANT_HOST_DIR/mssql_data/
+    rm -rf $VAGRANT_HOST_DIR/mongodata/
 }
 
 ########################
@@ -121,7 +123,7 @@ echo "Docker Engine successfully installed."
 img_pull_mongodb
 # img_build_mongodb_nonroot
 container_run_mongodb
-# db_setup
+db_setup
 
 # echo "Resetting the database."
 # reset_database_data
