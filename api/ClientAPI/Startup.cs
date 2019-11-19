@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using HealthChecks.UI.Client;
+using MongoDB.Driver;
 
 using ClientAPI.Domain.Queries;
 using ClientAPI.Domain.Queries.Interfaces;
@@ -36,7 +37,11 @@ namespace ClientAPI
                 .AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-            services.AddTransient<IClientQueries>(sp => new ClientQueries(Configuration["ConnectionStrings:ClientDB"]));
+            services.AddTransient<IClientQueries, ClientQueries>(sp => {
+                var client = new MongoClient(Configuration["ConnectionStrings:ClientDB"]);
+                return new ClientQueries(
+                    client.GetDatabase("ClientDB"));
+            });
 
             services.AddSwaggerGen(c =>
             {

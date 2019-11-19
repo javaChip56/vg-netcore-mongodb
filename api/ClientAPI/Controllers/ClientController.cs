@@ -38,11 +38,6 @@ namespace ClientAPI.Controllers
         {
             return await this._clientQueries.GetAllClientsAsync();
         }
-        
-        [HttpGet]
-        public async Task<IEnumerable<ClientAccount>> GetClientAccounts(string clientNo)
-        {
-            return await this._clientQueries.GetClientAccountsAsync(clientNo);
-        }
+     
     }
 }
