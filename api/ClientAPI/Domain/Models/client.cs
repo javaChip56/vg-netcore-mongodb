@@ -1,10 +1,15 @@
 using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ClientAPI.Domain.Models
 {
     public class Client
     {
-        public int Id { get; set; } 
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } 
+        public int ClientId { get; set; } 
         public string ClientName { get; set; } 
         public string ClientNo { get; set; } 
         public DateTime? BirthDate { get; set; } 

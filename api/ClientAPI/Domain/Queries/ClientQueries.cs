@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
+
+using MongoDB.Driver;
 
 using ClientAPI.Domain.Models;
 using ClientAPI.Domain.Queries.Interfaces;
@@ -16,7 +17,7 @@ namespace ClientAPI.Domain.Queries
         }
         public async Task<Client> GetClientAsync(int id)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = new MongoDB(_connectionString))
             {
                 conn.Open();
                 var parameters = new DynamicParameters();
