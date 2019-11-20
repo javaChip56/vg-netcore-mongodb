@@ -32,7 +32,7 @@ Vagrant.configure("2") do |config|
     netcoremongo_host.vm.provision "shell" do |s|
       s.path = "provision.sh"
       # Parameters (VAGRANT_HOST_DIR, BUILD_CLIENT_API, ROOT_USERNAME, ROOT_PASSWORD)
-      s.args = "/mnt/host false root D0cker123"
+      s.args = "/mnt/host true root D0cker123"
     end
 
   end

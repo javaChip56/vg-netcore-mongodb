@@ -12,7 +12,7 @@ echo_parameters()
 img_pull_mongodb()
 {
     docker rm -f docker-mongo
-    echo "Pulling MongoDb from remote Docker registry."
+    echo "Pulling MongoDb from remote Docker registry..."
     # Pulling the image from remote docker registry may take a while. Wait for this command to finish.
     docker pull mongo &
     wait $!
@@ -30,7 +30,7 @@ img_pull_mongodb()
 
 container_run_mongodb()
 {
-    echo "Running MongoDb container."
+    echo "Running MongoDb container..."
     docker run -d --restart unless-stopped -p 27017:27017 -v mongodata:/data/db -e MONGO_INITDB_ROOT_USERNAME=$ROOT_USERNAME -e MONGO_INITDB_ROOT_PASSWORD=$ROOT_PASSWORD --name docker-mongo mongo:latest &
     wait $!
     sudo usermod -aG docker mongo
@@ -38,7 +38,7 @@ container_run_mongodb()
 
 db_setup()
 {
-    echo "Setting up Client database."
+    echo "Setting up Client database..."
     docker exec docker-mongo /bin/sh -c 'mkdir /var/opt/imported-collections/' &
     wait $!
     # Copy the DB initialization scripts from host to the container scripts directory.
@@ -93,7 +93,7 @@ build_client_api()
 {
     docker rm -f /docker-client-api
     docker build $VAGRANT_HOST_DIR/api/clientapi -t img-client-api
-    docker run -d --name docker-client-api -p 8090:8090 img-client-api:latest
+    docker run -d --restart unless-stopped -p 8080:8080 --name docker-client-api img-client-api:latest &
 }
 
 ########################
@@ -124,14 +124,15 @@ img_pull_mongodb
 # img_build_mongodb_nonroot
 container_run_mongodb
 db_setup
-
 # echo "Resetting the database."
 # reset_database_data
+
 
 if ($BUILD_CLIENT_API = true)
     then
         echo "Build Client API."
-        build_client_api
+        build_client_api &
+        wait $!
         echo "Successfully built client API in Docker."
     else
         echo "User skipped building Client API."
