@@ -51,13 +51,13 @@ namespace ClientAPI.Controllers
             return await this._clientQueries.UpdateClientAsync(client);
         }
 
-        [HttpDelete]
+        [HttpPost]
         public async Task<bool> DeleteClient(int clientId)
         {
             return await this._clientQueries.DeleteClientAsync(clientId);
         }
 
-        [HttpDelete]
+        [HttpPost]
         public async Task<bool> DeleteClientByNo(string clientNo)
         {
             return await this._clientQueries.DeleteClientByNoAsync(clientNo);
