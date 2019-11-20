@@ -38,6 +38,29 @@ namespace ClientAPI.Controllers
         {
             return await this._clientQueries.GetAllClientsAsync();
         }
+
+        [HttpPost]
+        public async Task<bool> CreateClient(Client client)
+        {
+            return await this._clientQueries.InsertClientAsync(client);
+        }
      
+        [HttpPost]
+        public async Task<bool> UpdateClient(Client client)
+        {
+            return await this._clientQueries.UpdateClientAsync(client);
+        }
+
+        [HttpDelete]
+        public async Task<bool> DeleteClient(int clientId)
+        {
+            return await this._clientQueries.DeleteClientAsync(clientId);
+        }
+
+        [HttpDelete]
+        public async Task<bool> DeleteClientByNo(string clientNo)
+        {
+            return await this._clientQueries.DeleteClientByNoAsync(clientNo);
+        }
     }
 }
