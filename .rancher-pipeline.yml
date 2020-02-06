@@ -1,0 +1,9 @@
+stages:
+- name: compile
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./api/ClientAPI/Dockerfile
+      buildContext: .
+      tag: rancher-client-api
+timeout: 60
+notification: {}
