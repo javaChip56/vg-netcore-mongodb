@@ -14,7 +14,7 @@ To run this demo without installing the above applications, these are required t
 
 # Current State:
 - Runs Ubuntu Bionic in Virtualbox provisioned via Vagrant.
-- Installs Docker inside the guest VM. Then pulls and builds the MSSQL database.
+- Installs Docker inside the guest VM. Then pulls and builds the MongoDB database.
 - Sets up the sample databases and tables. The database will be exposed to the host machine on port 27020.
 - Runs 1 containerized .NET Core API called ClientAPI with basic get functions to fetch data from MongoDB database.
 
